@@ -1,25 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+
+import React, { useState } from 'react';
+import axios from 'axios';
+import RegistrationForm from './RegistrationForm';
+import TrainSchedule from './TrainSchedule';
 
 function App() {
+  const [authToken, setAuthToken] = useState('');
+
+  const handleAuthentication = async () => {
+    try {
+      const response = await axios.post('http://20.244.56.144/train/auth/', {
+        token: authToken,
+      });
+      setAuthToken(response.data.token);
+    } catch (error) {
+      console.error('Authentication failed:', error);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {!authToken ? (
+        <RegistrationForm onRegister={handleAuthentication} />
+      ) : (
+        <TrainSchedule authToken={authToken} />
+      )}
     </div>
   );
 }
 
 export default App;
+
+
+
